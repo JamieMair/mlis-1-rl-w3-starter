@@ -62,7 +62,7 @@ class Problem:
         while x != self.goal_state:
             states.append(x)
             #### TODO: Calculate probability of going right (a=+1), and replace below
-            # p_right = ?
+            p_right = 0.5  # Change this to be sigmoid(a * theta[x])
             #### END
 
             # Select a=+1 with probability 'p_right' and a=-1 with probability '1-p_right'
