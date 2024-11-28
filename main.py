@@ -32,6 +32,8 @@ class Trajectory:
         #### END
 
         return partial_returns
+
+
 class Problem:
     def __init__(self, seed=42, W=5, min_reward=-5, max_reward=-1):
         # Keep track of the original pseudo-random number generator state to reset to later
@@ -69,6 +71,13 @@ class Problem:
             a = int((np.random.rand() < p_right) * 2 - 1)
             ####
 
+            #### TODO: Remove the following code block once probabilities are properly calculated
+            if x == 0 and a == -1:
+                a = 1
+            elif x == self.W - 1 and a == +1:
+                a = -1
+            #### END
+
             # Step to the next state by applying environment function
             x = x + a
 
@@ -78,7 +87,7 @@ class Problem:
             # Update the actions and rewards
             actions.append(a)
             rewards.append(r)
-        
+
         # Append the terminal state to the list
         states.append(x)
         return Trajectory(states, actions, rewards)
@@ -113,23 +122,25 @@ class Problem:
 
         return grads, avg_return
 
-    def train(self, epochs: int, N: int, learning_rate: float, use_progress: bool = True):
+    def train(
+        self, epochs: int, N: int, learning_rate: float, use_progress: bool = True
+    ):
         avg_returns = np.zeros(epochs)
         it = range(epochs) if not use_progress else tqdm(range(epochs))
         for e in it:
             grads, avg_return = self.reinforce_gradient_estimate(N)
             #### TODO: Update the parameters with the gradient descent rule with learning rate alpha
-            # self.policy_parameters = ? 
+            # self.policy_parameters = ?
             #### END
 
             avg_returns[e] = avg_return
         return avg_returns
-    
+
     def calculate_max_return(self):
         if self.goal_state == 0:
-            return np.sum(self.tile_rewards[:self.starting_state])
+            return np.sum(self.tile_rewards[: self.starting_state])
         else:
-            return np.sum(self.tile_rewards[self.starting_state+1:])
+            return np.sum(self.tile_rewards[self.starting_state + 1 :])
 
 
 if __name__ == "__main__":
@@ -143,13 +154,21 @@ if __name__ == "__main__":
     alpha = 5e-4
     returns = problem.train(epochs, N, alpha)
     max_return = problem.calculate_max_return()
-    
+
     filter_width = 5
-    smoothed_returns = np.convolve(returns, np.ones(filter_width)/filter_width, mode='same')
+    smoothed_returns = np.convolve(
+        returns, np.ones(filter_width) / filter_width, mode="same"
+    )
 
     plt.figure()
-    plt.plot(range(1+filter_width,len(returns)+1-filter_width), smoothed_returns[filter_width:-filter_width], "-", label="Sampled Mean Return", alpha=0.7)
-    plt.plot([1, len(returns)+1], [max_return, max_return], '-.', label="Max Return")
+    plt.plot(
+        range(1 + filter_width, len(returns) + 1 - filter_width),
+        smoothed_returns[filter_width:-filter_width],
+        "-",
+        label="Sampled Mean Return",
+        alpha=0.7,
+    )
+    plt.plot([1, len(returns) + 1], [max_return, max_return], "-.", label="Max Return")
     plt.legend(loc="lower right")
     plt.xlabel("Epochs")
     plt.ylabel("Avg Return")
