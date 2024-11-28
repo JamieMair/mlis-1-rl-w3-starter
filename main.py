@@ -6,8 +6,9 @@ import matplotlib.pyplot as plt
 def sigmoid(x):
     return 1.0 / (1.0 + np.exp(-x))
 
+
 class Trajectory:
-    def __init__(self, states, actions, rewards):
+    def __init__(self, states, actions, rewards, discount=1):
         self.T = len(rewards) + 1
 
         assert len(actions) == len(rewards), "Must have as many rewards as actions"
@@ -15,6 +16,8 @@ class Trajectory:
         self.states = np.array(states, dtype=np.int64)
         self.actions = np.array(actions, dtype=np.int64)
         self.rewards = np.array(rewards)
+
+        self.discount = discount
 
 class Problem:
     def __init__(self, seed=42, W=5, min_reward=-5, max_reward=-1):
