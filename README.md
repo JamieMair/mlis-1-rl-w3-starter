@@ -51,7 +51,7 @@ If you prefer Jupyter Notebook, create a new notebook and copy in the source cod
 
 Running the code in the initial state should produce a graph similar to:
 
-![Avg Return Learning Curve - No Learning](/learning_curve.png)
+![Avg Return Learning Curve - No Learning](/no_learning_curve.png)
 
 
 ## Verification
